@@ -1,5 +1,6 @@
 const line = require('@line/bot-sdk');
 const azure = require("azure-storage");
+const queue = require("@azure/storage-queue");
 const flexm = require("./flexmn.js");
 
 const client = new line.Client({
@@ -370,36 +371,29 @@ const kittyUrl = async (userId) => {
 }
 
 const bird = async (userId) => {
-    const {
-      QueueClient
-    } = require("@azure/storage-queue");
-    //const uuidv1 = require("uuid/v1");
     let nekocameara = ownerName;
   
-    async function main() {
-      const queueName = nekocameara;
-      console.log("\nCreating queue...");
-      console.log("\t", queueName);
+    const queueName = nekocameara;
+    console.log("\nCreating queue...");
+    console.log("\t", queueName);
   
       // Instantiate a QueueClient which will be used to create and manipulate a queue
-      const queueClient = new QueueClient(connectionString, queueName);
+    const queueClient = new queue.QueueClient(connectionString, queueName);
   
       // Create the queue
-      const createQueueResponse = await queueClient.create();
-      console.log("Queue created, requestId:", createQueueResponse.requestId);
-      const sendMessageResponse = await queueClient.sendMessage(nekocameara);
+    const createQueueResponse = await queueClient.create();
+    console.log("Queue created, requestId:", createQueueResponse.requestId);
+    const sendMessageResponse = await queueClient.sendMessage(nekocameara);
+    console.log("Messages added, requestId:", sendMessageResponse.requestId);
   
-      console.log("Messages added, requestId:", sendMessageResponse.requestId);
-  
-      // Get messages from the queue
-      const receivedMessagesResponse = await queueClient.receiveMessages({
+    // Get messages from the queue
+    const receivedMessagesResponse = await queueClient.receiveMessages({
         numberOfMessages: 5,
-      });
+    });
   
-      console.log(
-        "Messages received, requestId:",
-        //receivedMessagesResponse.receivedMessageItems[0].messageText
-        receivedMessagesResponse.requestId
-      );
-    }
+    console.log(
+      "Messages received, requestId:",
+      //receivedMessagesResponse.receivedMessageItems[0].messageText
+      receivedMessagesResponse.requestId
+    );
 }
